@@ -1,0 +1,1 @@
+Place your bgm as /assets/bgm.mp3. Autoplay attempts at 10% volume with fallback on first user interaction.

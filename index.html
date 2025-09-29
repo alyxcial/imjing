@@ -12,16 +12,18 @@
 <body>
   <!-- Ambient -->
   <div class="ambient" aria-hidden="true"><span class="a"></span><span class="b"></span><span class="c"></span></div>
-  <!-- Loader (CSS auto hide + JS safety) -->
+  <!-- Loader with typing -->
   <div id="loader" aria-live="polite" aria-busy="true">
-    <div class="glyph">加载中…</div>
+    <div class="typing" id="loaderText"></div>
     <div class="spinner" aria-hidden="true"></div>
-    <div class="sub">请稍候</div>
   </div>
-  <!-- Background FX -->
+  <!-- BG FX -->
   <canvas id="fx" aria-hidden="true"></canvas>
 
-  <!-- Nav -->
+  <!-- Audio -->
+  <audio id="bgm" src="assets/bgm.mp3" loop preload="auto"></audio>
+  <button id="audioToggle" aria-label="Toggle background audio" title="Toggle background audio">Sound: on</button>
+
   <nav class="nav">
     <a href="#releases">Releases</a>
     <a href="#stats">Stats</a>
@@ -30,7 +32,6 @@
     <a href="https://open.spotify.com/artist/42jHcCAchQQSsmvlnGf8xA" target="_blank" rel="noopener">Spotify</a>
   </nav>
 
-  <!-- Header -->
   <header class="wrap">
     <div>
       <div class="pill">Artist</div>
@@ -43,18 +44,18 @@
       </h1>
       <p class="muted intro">Imjing — producer, vocalist, and cover artist focused on Chinese music.</p>
       <div class="actions">
-        <a class="btn" href="#releases">View releases</a>
-        <a class="btn" href="#contact">Contact</a>
+        <a class="btn cta-glow" href="#releases">View releases</a>
+        <a class="btn cta-glow" href="#contact">Contact</a>
       </div>
     </div>
   </header>
 
   <main class="wrap">
-    <!-- Releases -->
     <section id="releases" class="section">
       <h2>Releases <span class="cn">作品</span></h2>
       <p class="muted">Check out my latest releases.</p>
       <div class="grid">
+        <!-- Courage -->
         <article class="card card-hover">
           <div class="cover fx-frame fx-art">
             <img class="cover-img" src="assets/cover-yongqi.jpg" alt="Courage (勇气) cover"/>
@@ -63,12 +64,13 @@
           <h3>勇气 <small class="muted en">Courage</small></h3>
           <div class="badges">
             <span class="badge">Grow Micro</span>
-            <span class="badge soft">Streams: 64,032,735</span>
+            <span class="badge soft">Streams: <span class="count" data-count="64032735">0</span></span>
           </div>
           <p class="muted small">August 28, 2025</p>
           <a class="btn cta-glow" href="https://open.spotify.com/artist/42jHcCAchQQSsmvlnGf8xA" target="_blank" rel="noopener">Open on Spotify</a>
         </article>
 
+        <!-- Sun -->
         <article class="card card-hover">
           <div class="cover fx-frame fx-art">
             <img class="cover-img" src="assets/cover-taiyang.jpg" alt="Sun (太阳) cover"/>
@@ -77,7 +79,7 @@
           <h3>太阳 <small class="muted en">Sun</small></h3>
           <div class="badges">
             <span class="badge">Grow Micro</span>
-            <span class="badge soft">Streams: 10,515,684</span>
+            <span class="badge soft">Streams: <span class="count" data-count="10515684">0</span></span>
           </div>
           <p class="muted small">September 19, 2025</p>
           <a class="btn cta-glow" href="https://open.spotify.com/track/5V5UMvki3oiWFmTkp2UHSE" target="_blank" rel="noopener">Open on Spotify</a>
@@ -85,16 +87,20 @@
       </div>
     </section>
 
-    <!-- Stats -->
     <section id="stats" class="section">
       <h2>Stats <span class="cn">统计</span></h2>
       <div class="kpi">
-        <div class="box"><div class="muted">Monthly listeners</div><div class="big">107,159</div></div>
-        <div class="box"><div class="muted">Total streams (top two)</div><div class="big">74,548,419</div></div>
+        <div class="box">
+          <div class="muted">Monthly listeners</div>
+          <div class="big"><span class="count" data-count="107159">0</span></div>
+        </div>
+        <div class="box">
+          <div class="muted">Total streams (top two)</div>
+          <div class="big"><span class="count" data-count="74548419">0</span></div>
+        </div>
       </div>
     </section>
 
-    <!-- Social -->
     <section id="social" class="section">
       <h2>Social Media <span class="cn">社交</span></h2>
       <div class="social-card">
@@ -107,7 +113,6 @@
       </div>
     </section>
 
-    <!-- Contact -->
     <section id="contact" class="section">
       <h2>Contact <span class="cn">联系</span></h2>
       <p class="muted">For collabs, rights, or contact:</p>
@@ -116,7 +121,6 @@
   </main>
 
   <footer class="wrap footer">© <span id="year"></span> Imjing</footer>
-
   <script src="js/main.js" defer></script>
 </body>
 </html>

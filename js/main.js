@@ -1,5 +1,5 @@
 
-// Particles background (guarded)
+// Particles
 (() => {
   const c = document.getElementById('fx'); if(!c || !c.getContext) return;
   const ctx = c.getContext('2d'); let w,h,dpr; const P=[]; const N=130;
@@ -15,17 +15,50 @@
   addEventListener('resize', size, {passive:true}); size(); init(); requestAnimationFrame(step);
 })();
 
-// Loader safety (hard hide)
-(() => { const el=document.getElementById('loader'); if(!el) return; setTimeout(()=>{ el.style.opacity='0'; el.style.visibility='hidden'; }, 3000); })();
+// Loader typing + audio start + safe hide
+(() => {
+  const el=document.getElementById('loader');
+  const out=document.getElementById('loaderText');
+  const audio=document.getElementById('bgm');
+  if(!el || !out || !audio) return;
 
-// Nav: instant hide on scroll down, show on up/top
+  const lines = ["加载中…", "请稍候", "Welcome"];
+  let i=0, j=0;
+  function typeNext(){
+    if(i>=lines.length){ done(); return; }
+    const str = lines[i];
+    if(j <= str.length){
+      out.textContent = str.slice(0,j);
+      j++; setTimeout(typeNext, 70);
+    } else {
+      i++; j=0; setTimeout(typeNext, 500);
+    }
+  }
+  typeNext();
+
+  // try autoplay (default on, 10%)
+  audio.volume = 0.1;
+  audio.muted = false;
+  audio.play().catch(()=>{
+    // fallback: user interaction
+    const arm = () => { audio.muted=false; audio.volume=0.1; audio.play().catch(()=>{}); window.removeEventListener('pointerdown', arm); };
+    window.addEventListener('pointerdown', arm, {once:true});
+  });
+
+  function done(){
+    el.classList.add('hide');
+    setTimeout(()=>{ try{ el.remove(); }catch(_){} }, 700);
+  }
+})();
+
+// Nav show/hide
 (() => {
   const nav=document.querySelector('.nav'); if(!nav) return; let last=scrollY;
   addEventListener('scroll', ()=>{ const y=scrollY; if(y>last) nav.classList.add('nav-hide'); else nav.classList.remove('nav-hide'); last=y; }, {passive:true});
   addEventListener('hashchange', ()=> nav.classList.remove('nav-hide'));
 })();
 
-// Card hover light tracking
+// Hover light
 (() => {
   document.querySelectorAll('.card-hover').forEach(card => {
     card.addEventListener('pointermove', e => {
@@ -36,7 +69,7 @@
   });
 })();
 
-// Image fallbacks
+// Fallbacks
 (() => {
   const pfp = document.getElementById('pfp');
   if (pfp) pfp.addEventListener('error', () => {
@@ -44,14 +77,14 @@
     const fb = pfp.parentElement?.querySelector('.pfp-fallback'); if(fb) fb.style.display='block';
   }, {once:true});
   document.querySelectorAll('.cover').forEach(c => {
-    const img = c.querySelector('.cover-img'); const fb = c.querySelector('.cover-fallback');
+    const img = c.querySelector('.cover-img');
     img?.addEventListener('error', () => { c.classList.add('is-fallback'); }, {once:true});
   });
 })();
 
-// Smooth scroll + section flash highlight
+// Smooth scroll for all in-page links + section highlight
 (() => {
-  const links = document.querySelectorAll('nav a[href^="#"]');
+  const links = document.querySelectorAll('a[href^="#"]');
   const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   links.forEach(a => {
     a.addEventListener('click', e => {
@@ -60,12 +93,51 @@
       if (!target) return;
       e.preventDefault();
       target.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
-      const doFlash = () => {
-        target.classList.add('section-flash');
-        setTimeout(() => target.classList.remove('section-flash'), 1000);
-      };
+      const doFlash = () => { target.classList.add('section-flash'); setTimeout(() => target.classList.remove('section-flash'), 1000); };
       setTimeout(doFlash, prefersReduced ? 0 : 450);
     });
+  });
+})();
+
+// Animated counters (stats + stream badges)
+(() => {
+  const els = document.querySelectorAll('.count[data-count]');
+  const fmt = n => n.toLocaleString();
+  const animate = (el, to, dur=1600) => {
+    const from = 0;
+    const start = performance.now();
+    const step = (t) => {
+      const p = Math.min(1, (t-start)/dur);
+      const eased = 1 - Math.pow(1-p, 3); // easeOutCubic
+      el.textContent = fmt(Math.floor(from + (to-from)*eased));
+      if(p<1) requestAnimationFrame(step);
+      else el.textContent = fmt(to);
+    };
+    requestAnimationFrame(step);
+  };
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const el = e.target;
+        const to = parseInt(el.getAttribute('data-count'),10) || 0;
+        animate(el, to, to > 2000000 ? 2200 : 1600);
+        io.unobserve(el);
+      }
+    });
+  }, {threshold: .4});
+
+  els.forEach(el => io.observe(el));
+})();
+
+// Audio toggle (still present)
+(() => {
+  const audio=document.getElementById('bgm');
+  const toggle=document.getElementById('audioToggle');
+  if(!audio || !toggle) return;
+  toggle.addEventListener('click', () => {
+    if (audio.muted || audio.volume === 0) { audio.muted=false; audio.volume=0.1; audio.play().catch(()=>{}); toggle.textContent='Sound: on'; }
+    else { audio.muted=true; toggle.textContent='Sound: off'; }
   });
 })();
 
